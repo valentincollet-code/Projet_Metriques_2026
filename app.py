@@ -1,9 +1,14 @@
 import requests
 from flask import Flask, jsonify, render_template
 
+app = Flask(__name__)
 
+@app.route('/')
+def hello_world():
+    return render_template('hello.html')
 
 # Déposez votre code à partir d'ici :
+
 @app.get("/paris")
 def api_paris():
     
@@ -21,6 +26,10 @@ def api_paris():
     ]
 
     return jsonify(result)
+
+
+
+
 
 # Ne rien mettre après ce commentaire
     
