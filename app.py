@@ -34,6 +34,32 @@ def mongraphique():
 def mon_histogramme(): # <-- Le nom de la fonction est maintenant unique
     return render_template("histogramme.html")
 
+@app.get("/api_atelier")
+def api_atelier_data():
+  
+    url = "https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current=relative_humidity_2m,cloud_cover"
+    response = requests.get(url)
+    data = response.json()
+
+    current = data.get("current", {})
+    
+  
+    humidite = current.get("relative_humidity_2m", 0)
+    
+ 
+    nuages = current.get("cloud_cover", 0)
+    ensoleillement = 100 - nuages
+
+
+    return jsonify({
+        "humidite": humidite,
+        "ensoleillement": ensoleillement
+    })
+
+@app.route("/atelier")
+def mon_atelier():
+    return render_template("atelier.html")
+
 # Ne rien mettre après ce commentaire
     
 if __name__ == "__main__":
