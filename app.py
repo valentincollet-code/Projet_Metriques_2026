@@ -1,7 +1,7 @@
 import requests
 from flask import Flask, jsonify, render_template
 
-
+app = Flask(__name__)
 # Déposez votre code à partir d'ici :
 
 @app.get("/paris")
