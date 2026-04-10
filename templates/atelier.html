@@ -3,98 +3,170 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Métrologie - Paris</title>
+  <title>Dashboard Métrologie Premium</title>
 
   <script src="https://www.gstatic.com/charts/loader.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
+    /* --- FOND D'ÉCRAN ANIMÉ SYMPA --- */
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #1e1e2f; /* Fond sombre façon dashboard */
-      color: #ffffff;
       margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      color: #ffffff;
+      /* Dégradé de fond animé (tons bleus/nuits très Dashboard) */
+      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1a2a6c);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     h1 {
-      margin-bottom: 10px;
-      letter-spacing: 1px;
+      font-weight: 600;
+      font-size: 2.5em;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      margin-bottom: 5px;
     }
 
     p.subtitle {
-      color: #a0a0b5;
+      color: #c4c4cc;
       margin-bottom: 40px;
+      font-size: 1.1em;
     }
 
-    .dashboard-card {
-      background: #2a2a40;
-      padding: 40px;
+    /* --- EFFET GLASSMORPHISM POUR LES PANNEAUX --- */
+    .dashboard-panel {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Conteneur pour centrer les jauges */
-    #gauge_chart {
-      margin-top: 20px;
+    .panel-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      color: #78ffd6; /* Une petite touche néon */
+    }
+
+    #history_chart {
+      width: 100%;
+      height: 400px;
     }
   </style>
 </head>
 
 <body>
-  <h1>Dashboard Métrologie</h1>
-  <p class="subtitle">Indicateurs en temps réel - Paris</p>
+  <h1>Tableau de Bord — Paris</h1>
+  <p class="subtitle">Indicateurs en temps réel et Historique</p>
 
-  <div class="dashboard-card">
+  <div class="dashboard-panel">
+    <div class="panel-title">Météo Instantanée</div>
     <div id="gauge_chart"></div>
   </div>
 
+  <div class="dashboard-panel">
+    <div class="panel-title">Historique (48h)</div>
+    <div id="history_chart"></div>
+  </div>
+
   <script>
-    // On charge le package "gauge" au lieu de "corechart"
-    google.charts.load('current', { 'packages': ['gauge'] });
-    google.charts.setOnLoadCallback(drawChart);
+    // On charge DEUX packages : gauge (pour les compteurs) et corechart (pour la courbe)
+    google.charts.load('current', { 'packages': ['gauge', 'corechart'] });
+    google.charts.setOnLoadCallback(initCharts);
 
-    async function drawChart() {
+    async function initCharts() {
       try {
-        // 1. Récupération des données depuis notre nouvelle API Flask
         const response = await fetch('/api_atelier');
-        const dataAPI = await response.json();
+        const apiData = await response.json();
 
-        // 2. Formatage des données pour Google Charts (avec nos emojis !)
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['☀️ Soleil %', dataAPI.ensoleillement],
-          ['💧 Humidité %', dataAPI.humidite]
-        ]);
+        drawGauges(apiData.actuel);
+        drawHistory(apiData.historique);
 
-        // 3. Options de customisation des jauges
-        var options = {
-          width: 500, 
-          height: 250,
-          redFrom: 90, redTo: 100,       // Zone rouge entre 90 et 100%
-          yellowFrom: 75, yellowTo: 90,  // Zone jaune entre 75 et 90%
-          minorTicks: 5,
-          animation: {
-            duration: 1000,
-            easing: 'inAndOut'
-          }
-        };
-
-        // 4. Dessin du graphique dans la div #gauge_chart
-        var chart = new google.visualization.Gauge(document.getElementById('gauge_chart'));
-        chart.draw(data, options);
+        // Optionnel : redessiner l'historique si on redimensionne la fenêtre
+        window.addEventListener('resize', () => {
+          drawHistory(apiData.historique);
+        });
 
       } catch (error) {
-        console.error("Erreur lors de la récupération des données : ", error);
-        document.getElementById('gauge_chart').innerHTML = "<p>Erreur de chargement des données.</p>";
+        console.error("Erreur API : ", error);
       }
+    }
+
+    function drawGauges(donneesActuelles) {
+      var data = google.visualization.arrayToDataTable([
+        ['Label', 'Value'],
+        ['☀️ Soleil %', donneesActuelles.ensoleillement],
+        ['💧 Humidité %', donneesActuelles.humidite]
+      ]);
+
+      var options = {
+        width: 500, height: 200,
+        redFrom: 90, redTo: 100,
+        yellowFrom: 75, yellowTo: 90,
+        minorTicks: 5,
+        animation: { duration: 1500, easing: 'inAndOut' }
+      };
+
+      var chart = new google.visualization.Gauge(document.getElementById('gauge_chart'));
+      chart.draw(data, options);
+    }
+
+    function drawHistory(historique) {
+      const data = new google.visualization.DataTable();
+      data.addColumn('datetime', 'Date/Heure');
+      data.addColumn('number', '☀️ Ensoleillement (%)');
+      data.addColumn('number', '💧 Humidité (%)');
+
+      // Conversion des données pour Google Charts
+      const rows = historique.map(point => {
+        const dateObj = new Date(point.datetime);
+        return [dateObj, point.ensoleillement, point.humidite];
+      });
+
+      data.addRows(rows);
+
+      const options = {
+        backgroundColor: 'transparent', // Rend le fond du graphique transparent
+        colors: ['#f6e58d', '#7ed6df'], // Couleurs des courbes (Jaune et Bleu clair)
+        legend: { textStyle: { color: '#ffffff' } },
+        hAxis: { 
+          textStyle: { color: '#ffffff' },
+          gridlines: { color: 'rgba(255,255,255,0.1)' }
+        },
+        vAxis: { 
+          textStyle: { color: '#ffffff' },
+          gridlines: { color: 'rgba(255,255,255,0.1)' },
+          viewWindow: { min: 0, max: 100 }
+        },
+        chartArea: { width: '80%', height: '70%' },
+        curveType: 'function' // Rend les courbes douces/arrondies
+      };
+
+      // On utilise un AreaChart (courbe avec le dessous rempli) pour un effet plus sympa
+      var chart = new google.visualization.AreaChart(document.getElementById('history_chart'));
+      chart.draw(data, options);
     }
   </script>
 </body>
