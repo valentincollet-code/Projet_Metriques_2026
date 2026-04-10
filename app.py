@@ -31,8 +31,14 @@ def mongraphique():
     return render_template("graphique.html")
 
 @app.route("/histogramme")
-def mon_histogramme(): # <-- Le nom de la fonction est maintenant unique
+def mon_histogramme(): 
     return render_template("histogramme.html")
+
+# --- LA ROUTE MANQUANTE EST ICI ---
+@app.route("/atelier")
+def mon_atelier():
+    return render_template("atelier.html")
+# ----------------------------------
 
 @app.get("/api_atelier")
 def api_atelier_data():
