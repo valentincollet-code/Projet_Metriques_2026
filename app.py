@@ -27,8 +27,8 @@ def mongraphique():
     return render_template("graphique.html")
 
 @app.route("/histogramme")
-def mongraphique():
-    return render_template("graphique.html")
+def mon_histogramme(): # <-- Le nom de la fonction est maintenant unique
+    return render_template("histogramme.html")
 
 # Ne rien mettre après ce commentaire
     
