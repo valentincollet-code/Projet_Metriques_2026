@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — Mon Portfolio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Réinitialisation de base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Fond de la page : dégradé animé */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            padding: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Effet Glassmorphism pour la carte du formulaire */
+        .contact-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
+            color: #ffffff;
+        }
+
+        .contact-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Styles des champs de saisie */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-group input, 
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            outline: none;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        /* Changer la couleur du texte indicatif (placeholder) */
+        .input-group input::placeholder, 
+        .input-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Effet au clic dans un champ */
+        .input-group input:focus, 
+        .input-group textarea:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+
+        /* Styles du bouton */
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #e73c7e; /* Reprend une couleur du dégradé */
+            font-size: 1.1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contact-card">
+        <h2>Contactez-moi</h2>
+        
+        <form onsubmit="event.preventDefault(); alert('🚀 Votre message a bien été simulé ! (Aucune base de données connectée)');">
+            
+            <div class="input-group">
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" placeholder="Saisissez votre nom" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" placeholder="Saisissez votre prénom" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="message">Votre Message</label>
+                <textarea id="message" rows="5" placeholder="Écrivez votre message ici..." required></textarea>
+            </div>
+            
+            <button type="submit">Envoyer le message</button>
+        </form>
+    </div>
+
+</body>
+</html>
