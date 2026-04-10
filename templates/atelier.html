@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Métrologie - Paris</title>
+
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #1e1e2f; /* Fond sombre façon dashboard */
+      color: #ffffff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    p.subtitle {
+      color: #a0a0b5;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-card {
+      background: #2a2a40;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Conteneur pour centrer les jauges */
+    #gauge_chart {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Dashboard Métrologie</h1>
+  <p class="subtitle">Indicateurs en temps réel - Paris</p>
+
+  <div class="dashboard-card">
+    <div id="gauge_chart"></div>
+  </div>
+
+  <script>
+    // On charge le package "gauge" au lieu de "corechart"
+    google.charts.load('current', { 'packages': ['gauge'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    async function drawChart() {
+      try {
+        // 1. Récupération des données depuis notre nouvelle API Flask
+        const response = await fetch('/api_atelier');
+        const dataAPI = await response.json();
+
+        // 2. Formatage des données pour Google Charts (avec nos emojis !)
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['☀️ Soleil %', dataAPI.ensoleillement],
+          ['💧 Humidité %', dataAPI.humidite]
+        ]);
+
+        // 3. Options de customisation des jauges
+        var options = {
+          width: 500, 
+          height: 250,
+          redFrom: 90, redTo: 100,       // Zone rouge entre 90 et 100%
+          yellowFrom: 75, yellowTo: 90,  // Zone jaune entre 75 et 90%
+          minorTicks: 5,
+          animation: {
+            duration: 1000,
+            easing: 'inAndOut'
+          }
+        };
+
+        // 4. Dessin du graphique dans la div #gauge_chart
+        var chart = new google.visualization.Gauge(document.getElementById('gauge_chart'));
+        chart.draw(data, options);
+
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données : ", error);
+        document.getElementById('gauge_chart').innerHTML = "<p>Erreur de chargement des données.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
